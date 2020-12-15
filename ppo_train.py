@@ -43,8 +43,8 @@ class OMissile(OAgentSim):
     def get_reward(self, t_target):
         e_local = (t_target - (self.Y[0] + self.tgo)) / self.tgo
         ky = 0.1
-        reward_local = ky * (0.1 * math.exp((self.Y[4] - self.R) / 1.3e4) +
-                             0.9 * math.exp(-(self.R / 1.6e4) ** 2)) + \
+        reward_local = ky * (0.1 * math.exp(-(self.Y[4] - self.R)** 2 / 1.3e4) +
+                             0.9 * math.exp(self.R / 1.6e4) + \
                        (1 - ky) * math.exp(-e_local ** 2)
         # print(zem)
         return np.array(reward_local)
@@ -110,24 +110,6 @@ if __name__ == '__main__':
                   .format(episode + 1, TRAIN_EPISODES, episode_reward, time.time() - t0,
                           td, env.Y[0], td - env.Y[0]))
 
-            plt.figure()
-            plt.subplots_adjust(hspace=0.6)
-            plt.subplot(2, 1, 1)
-            plt.plot(np.array(env.reY)[:, 0], np.array(desired_tgo)[:-1], 'k--', label='desired tgo')
-            plt.plot(np.array(env.reY)[:, 0], np.array(actual_tgo)[:-1], 'k-', label='actual tgo')
-            plt.xlabel('Time (s)')
-            plt.ylabel('t_go(s)')
-            plt.legend()
-            plt.grid()
-
-            plt.subplot(2, 1, 2)
-            plt.plot()
-            plt.plot(np.array(env.reY)[:, 0], np.array(impact_time_error)[:-1], 'k-')
-            plt.xlabel('Time (s)')
-            plt.ylabel('impact time error(s)')
-            plt.grid()
-            plt.show()
-
             # calculate the discounted episode reward
             if episode == 0:
                 all_episode_reward.append(episode_reward)
@@ -182,12 +164,6 @@ if __name__ == '__main__':
                 # tgo = (1 + (env.theta - env.q) ** 2 / 10) * env.R / env.v
                 # # tgo = env.get_tgo()
                 # action = K * ((td - env.t - tgo)
-
-                # kim2013biased
-                # AC = 3 * v * qdot
-                # rgo = (1 + (theta - q) ** 2 / 10) * R
-                # eps = v * (td - t) - rgo
-                # action = AC * (0.5 - 0.5 * math.sqrt(1 + (240 * v ** 4 * eps / (AC ** 2 * R ** 3))))
 
                 # tahk2018impact
                 # lamb = env.theta - env.q  # 超前角
